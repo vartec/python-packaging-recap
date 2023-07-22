@@ -1,4 +1,14 @@
-# Python Packaging and Deployment: Recap of the State of Art as of 2023
+---
+layout: page
+title: Python Packaging and Deployment
+tagline: State of Art as of 2023
+description: An opinionated, streamlined recap of the state of Python packaging, including hosting private packages, 
+and Python services deployment. 
+---
+
+# Python Packaging and Deployment: State of Art as of 2023
+
+### by Bartek Ogryczak <[`bartek.fyi`](https://bartek.fyi/)>
 
 [![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
