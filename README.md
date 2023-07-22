@@ -159,7 +159,7 @@ This is not an exhaustive list, these are just the most commonly used backends.
 #### setuptools
 `build` config for _setuptools_:
 
-```TOML
+```toml
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
@@ -168,7 +168,7 @@ build-backend = "setuptools.build_meta"
 #### Flit 
 [_Flit_](https://flit.pypa.io/) is the proof of concept and de facto reference implementation for [PEP-518](https://peps.python.org/pep-0518/) and [PEP-517](https://peps.python.org/pep-0517/). Aims to be as streamlined as possible, especially for simple cases like pure Python packages. 
 
-```TOML
+```toml
 [build-system]
 requires = ["flit_core>=3.4"]
 build-backend = "flit_core.buildapi"
@@ -178,7 +178,7 @@ build-backend = "flit_core.buildapi"
 [_PDM_](https://pdm.fming.dev/) is modern Python package and dependency manager inspired in NPM, with a goal of supporting the latest PEP standards. 
 [`pdm-backend`](https://pdm-backend.fming.dev/) is its build backend, which can be used with PDM or as a backend for `build`.
 
-```TOML
+```toml
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
@@ -186,7 +186,7 @@ build-backend = "pdm.backend"
 
 #### Hatchling 
 _Hatchling_ is a backend used by [_Hatch_](https://hatch.pypa.io/), another Python project manager. Again, can be used standalone as `build` backend.
-```TOML
+```toml
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -196,7 +196,7 @@ build-backend = "hatchling.build"
 #### Poetry 
 [_Poetry_](https://python-poetry.org/) is yet another package and dependency manager, quite a popular one, if any dependency manager had chance 
 at replacing `pip` it would be this one. Poetry is the project that was first to introduce `pyproject.toml`. Its build backed is `poetry-core`.
-```TOML
+```toml
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
