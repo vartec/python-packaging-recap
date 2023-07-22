@@ -2,8 +2,7 @@
 layout: page
 title: Python Packaging and Deployment
 tagline: State of Art as of 2023
-description: An opinionated, streamlined recap of the state of Python packaging, including hosting private packages, 
-and Python services deployment. 
+description: An opinionated, streamlined recap of the state of Python packaging, including hosting private packages, and Python services deployment. 
 ---
 
 # Python Packaging and Deployment: State of Art as of 2023
