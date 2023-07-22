@@ -97,7 +97,7 @@ You can tell them apart from _sdist_ packages, as sdist is `{package}-{version}.
 - `.rpm`, Linux package for RedHat based Linux distributions; 
 - `.dmg`, `.msi`, OS dependent installers for Windows and MacOS respectively;
 
-## Specifying Packages 
+<!-- ## Specifying Packages -->
 
 ## Building Packages
 
