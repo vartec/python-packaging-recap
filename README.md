@@ -37,7 +37,7 @@ Thus the answer to this question has never been more complex and contentious.
 
 ## Package Types
 
-### sdist
+### Source Distribution aka `sdist`
 `sdist` or a _source distribution_ is basically just a compressed archive (typically a `.tar.gz`) of the sources 
 with a little additional metadata. It's not directly installable, requires a _build_ step before it's installed. 
 In case of pure Python packages this could be good enough, but definitely falls short in case of Python bindings 
@@ -47,13 +47,16 @@ might be non-trivial, and generally not something you'd want to depend on as par
 Also, for some libraries it takes quite a while to compile, you wouldn't want your CI jobs waiting 20 minutes for 
 let's say NumPy or SciPy to compile before it can even start running tests. 
 
+While there is no formal specification for legacy setup.py-style sdist, for current compliant pyproject.toml-style 
+sdists the format is specified in [PEP-517](https://peps.python.org/pep-0517/)
 
 > **Note**  
-> While `.tar.gz` is the default format and other [formats are also supported by _setuptools_](https://docs.python.org/3/distutils/sourcedist.html). 
-> You might be tempted to choose `.tar.xz` or `.tar.bz2` for significantly better compression ratios, 
-> however keep in mind that for public packages, per  [PEP-527](https://peps.python.org/pep-0527/), 
-> only `.tar.gz` and `.zip` are allowed on PyPI, while already accepted  formalization of _sdist_ file 
-> naming scheme [PEP-625](https://peps.python.org/pep-0625/) drops `.zip`, accepting  `.tar.gz` only. 
+> While there are many [formats supported by _setuptools_](https://docs.python.org/3/distutils/sourcedist.html), 
+> you might be tempted to choose `.tar.xz` or `.tar.bz2` for significantly better compression ratios, 
+> however keep in mind that for public packages, per [PEP-527](https://peps.python.org/pep-0527/), 
+> only `.tar.gz` and `.zip` are allowed on PyPI, while [PEP-517](https://peps.python.org/pep-0517/) amongst other things
+> formalizes _sdist_ file format as gzipped tar, which is further reinforced by formalized naming scheme 
+> [PEP-625](https://peps.python.org/pep-0625/) accepting `.tar.gz` extensions only. 
 
 ### Wheels
 Wheels are _distribution packages_, as such their content is unzipped _as is_ into the `site-packages` directory. Wheel format started as an official PSF [PEP-427](https://peps.python.org/pep-0427/), but is [currently maintained by PyPA](https://packaging.python.org/en/latest/specifications/binary-distribution-format/). 
@@ -83,9 +86,20 @@ This is a legacy distribution format, that was obsoleted with introduction of Wh
 archive, this time with custom extension `.egg`. Unlike Wheel format, which has formal specification, Egg was an ad-hoc 
 format added by `setuptools`. 
 
-## Building packages
+### Other Formats
 
-### Using build (highly recommended)
+There are a number of other Python distribution package formats, however they are non-standard, aren't used outside of their specific niche, so I'll only mention them briefly:
+- [Conda](https://docs.conda.io/) packages (`.conda` or `.tar.bz2`), a tarball of `site-packages/{package}/` and Conda specific metadata in `info/`. 
+You can tell them apart from _sdist_ packages, as sdist is `{package}-{version}.tar.gz`, while Conda packages are `{package}-{version}-{build_tag}.tar.bz2`;
+- [PEX](https://github.com/pantsbuild/pex) (`.pex`), Python EXecutable, a full virtualenv distributed as a self-contained package;
+- `.rpm`, Linux package for RedHat based Linux distributions; 
+- `.dmg`, `.msi`, OS dependent installers for Windows and MacOS respectively;
+
+## Specifying Packages 
+
+## Building Packages
+
+### Using build _[highly recommended]_
 
 [`build`](https://pypa-build.readthedocs.io/) is a simple implementation of build frontend as described in [PEP-517](https://peps.python.org/pep-0517/) It's created and maintained by the the [Python Packaging Authority (PyPA)](https://www.pypa.io/), which recommends using this rather than `pip` for modern PEP-517 conforming packages, meaning packages which have `pyproject.toml` that includes `[build-system]` section. 
 
@@ -112,22 +126,78 @@ python3 -m pip wheel ${srcdir} --no-deps  # creates only the wheel for the packa
 
 _Pip_ does not support building _sdist_ packages. 
 
-### Using setuptools directly (deprecated)
-
-> **Note**  
-> While [_setuptools_](https://setuptools.pypa.io/) are not deprecated, and in fact are actively maintained, using them as build system
-> directly is. You should [configure _setuptools_ in your `pyproject.toml`
-> ](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#setuptools-specific-configuration) instead.  
-> In many cases both `build` and `pip` will invoke _setuptools_ underneath the hood.    
+### Using setuptools Directly _[deprecated]_
 
 [_Setuptools_](https://setuptools.pypa.io/) is a library facilitating Python packaging, it was created as a replacement for disutils. 
-It's still the primary choice for Python packaging. It's just no longer recommended to use it directly, "by hand". 
+It's still the primary choice for Python packaging. However it's now considered a _build backend_, as such should not be invoked directly, 
+but rather through a build frontend, such as `build` mentioned above. 
+
 Packages will be added to `./dist/`
 
 ```shell
 python3 setup.py sdist  # builds sdist
 python3 setup.py sdist --formats=gztar  # build sdist forcing format to be .tar.gz
 python3 setup.py bdist_wheel  # builds wheel
+```
+> **Note**  
+> While [_setuptools_](https://setuptools.pypa.io/) are not deprecated, and in fact are actively maintained, using them as build system
+> directly is. You should [configure _setuptools_ in your `pyproject.toml`
+> ](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#setuptools-specific-configuration) instead.  
+> In many cases both `build` and `pip` will invoke _setuptools_ underneath the hood.    
+
+
+###  Build Backends
+
+There are now number of alternative build backends, aside from setuptools. Keep in mind that the same logic
+applies to all, they should not be invoked _directly_, but rather used through `build` frontend configured in 
+`[build-system]` section of `pyproject.toml`. 
+
+This is not an exhaustive list, these are just the most commonly used backends. 
+
+#### setuptools
+`build` config for _setuptools_:
+
+```TOML
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+```
+
+#### Flit 
+[_Flit_](https://flit.pypa.io/) is the proof of concept and de facto reference implementation for [PEP-518](https://peps.python.org/pep-0518/) and [PEP-517](https://peps.python.org/pep-0517/). Aims to be as streamlined as possible, especially for simple cases like pure Python packages. 
+
+```TOML
+[build-system]
+requires = ["flit_core>=3.4"]
+build-backend = "flit_core.buildapi"
+```
+
+#### PDM 
+[_PDM_](https://pdm.fming.dev/) is modern Python package and dependency manager inspired in NPM, with a goal of supporting the latest PEP standards. 
+[`pdm-backend`](https://pdm-backend.fming.dev/) is its build backend, which can be used with PDM or as a backend for `build`.
+
+```TOML
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+```
+
+#### Hatchling 
+_Hatchling_ is a backend used by [_Hatch_](https://hatch.pypa.io/), another Python project manager. Again, can be used standalone as `build` backend.
+```TOML
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+
+#### Poetry 
+[_Poetry_](https://python-poetry.org/) is yet another package and dependency manager, quite a popular one, if any dependency manager had chance 
+at replacing `pip` it would be this one. Poetry is the project that was first to introduce `pyproject.toml`. Its build backed is `poetry-core`.
+```TOML
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 ```
 
 
