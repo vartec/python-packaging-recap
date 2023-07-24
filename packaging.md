@@ -61,8 +61,59 @@ You can tell Conda package apart from _sdist_ packages, as sdist is `{package}-{
 - [PEX](https://github.com/pantsbuild/pex) (`.pex`), Python EXecutable, a full virtualenv distributed as a self-contained package. Used, amongst other DE/ML tools, by PySpark;
 - `.rpm`, Linux package for RedHat based Linux distributions; 
 - `.dmg`, `.msi`, OS dependent installers for Windows and MacOS respectively;
+- Jupyter Notebooks (`.ipynb`) - not sure if you can call it a Python package, but it is a way of sharing Python code. A Jupyter Notebook is a JSON format which combines its metadata, with one or more segments (called _cells_ in Jypyter lingo), each of which can be one either markdown, code (traditionally Python or R, but more languages are added), or rich media output data which can be used for visualization using various image formats. 
 
-<!-- ## Specifying Packages -->
+## Package Specification
+
+### One `pyproject.toml` to Rule Them All
+
+You can have whole specification of your package in just one file - `pyproject.toml`. It can, with some caveats, replace both `setup.py` and `setup.cfg`.
+Project specification goes into `[project]` section and `[project.*]` sub-sections. 
+
+### Minimum Set of Fields
+
+There are only two project specification fields that are absolutely required to build a package.
+```toml
+[project]
+name = "myexamplepackage"  # the name of the package
+version = "1.2.3"  # a PEP-440 compliant version string
+```
+
+Most likely you package has dependencies, you can also specify optional dependencies. 
+
+```toml
+[project]
+⋮
+dependencies = [   # is setup.py this was called "install_requires"
+  "required_dependency"
+]
+
+[project.optional-dependencies]  # in setup.py this was called "extras_require"
+dev = ["ipdb"]  # name of the extra followed by list of requirements 
+test = ["pytest"]  
+```
+
+Unless you're creating a universal Python2 / Python3 package, which in 2023 is unlikely, you need to specify minimum Python version:
+```toml
+[project]
+⋮
+requires-python = ">=3"
+```
+
+If a package is private and you want to prevent in being accidentally uploaded to PyPI, adding any classifier starting with `Private ::` 
+will ensure PyPI automatically rejects it:
+```toml
+[project]
+⋮
+classifiers = [
+    Private :: Do Not Upload,
+]
+```
+
+### Descriptive Fields 
+
+
+
 
 ## Building Packages
 
