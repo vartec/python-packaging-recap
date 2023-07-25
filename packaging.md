@@ -189,9 +189,9 @@ Note, that the section `[tool.setuptools.dynamic]` is _setuptools_ specific, as 
 ### Migrating `setup.py` and/or `setup.cfg` to `pyproject.toml`
 
 > **Warning**  
-> This is slightly controversial topic in Python community, and there are still devs to feel like `pyproject.toml`
+> This is slightly controversial topic in Python community, and there still are devs who feel like `pyproject.toml`
 > has been forced upon them for no reason. I won't get into the details or take sides. What I am presenting 
-> in this document are the best practices as described in a PSF approved PEPs, and PyPA's best practices documentation. 
+> in this document are the best practices as described in a PSF approved PEPs, and PyPA's packaging guidelines. 
  
 As I've mentioned earlier, as of 2023, `pyproject.toml` can fully replace both `setup.py` and `setup.cfg`.
 Unfortunately legacy setuptools does not make a clear distinction between which `setup()` parameters in `setup.py`, 
