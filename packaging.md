@@ -67,10 +67,10 @@ You can tell Conda package apart from _sdist_ packages, as sdist is `{package}-{
 
 ### One `pyproject.toml` to Rule Them All
 
-> **Warning**  
+> _**Warning**  
 > This is slightly controversial topic in Python community, and there still are devs who feel like `pyproject.toml`
 > has been forced upon them for no reason. I won't get into the details or take sides. What I am presenting 
-> in this document are the best practices as described in PSF approved PEPs, and PyPA's packaging guidelines. 
+> in this document are the best practices as described in PSF approved PEPs, and PyPA's packaging guidelines._
 
 You can have whole specification of your package in just one file - `pyproject.toml`. It can, with some caveats, replace both `setup.py` and `setup.cfg`.
 Project specification goes into `[project]` section and `[project.*]` sub-sections. 
