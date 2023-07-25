@@ -40,8 +40,8 @@ Thus the answer to this question has never been more complex and contentious.
 ## Contents
 
 * [Part 1: Packaging](packaging.md) 
-# * [Part 2: Specifying Dependencies](dependencies.md)
-# * [Part 3: Hosting Packages (WIP)]
+<!-- * [Part 2: Specifying Dependencies](dependencies.md)
+ * [Part 3: Hosting Packages (WIP)] -->
 
 --- 
 [![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa] This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
