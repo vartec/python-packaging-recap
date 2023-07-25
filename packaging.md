@@ -173,7 +173,7 @@ classifiers = [
 It's a common practice to have package version stored in `package/version.py` or `package/__init__.py`, which would then be available as 
 `package.__version__` Python code. This creates a chicken-egg problem for the packaging tools, as you need to know the version of the package,
 _before_ the package available, thus before `package.__version__` could imported. Having the version in one single source of truth 
-is known as _single-sourcing the package version_(https://packaging.python.org/en/latest/guides/single-sourcing-package-version/).  
+is known as [_single-sourcing the package version_](https://packaging.python.org/en/latest/guides/single-sourcing-package-version/).  
 In the legacy `setup.py` this required a gnarly workaround, and while there are many implementations, they all basically boil down
 to manually reading the specified file, than either using regex to extract the version, `exec`-ing the whole file, or outright
 having version stored in another plain-text file (which adds even more problems). None of these are great. 
