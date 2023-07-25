@@ -40,7 +40,7 @@ Thus the answer to this question has never been more complex and contentious.
 ## Contents
 
 * [Part 1: Packaging](packaging.md) 
-* [Part 2: Specifying Dependencies](dependencies.md)
+# * [Part 2: Specifying Dependencies](dependencies.md)
 # * [Part 3: Hosting Packages (WIP)]
 
 --- 
