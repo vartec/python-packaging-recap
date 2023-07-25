@@ -83,7 +83,7 @@ Most likely you package has dependencies, you can also specify optional dependen
 
 ```toml
 [project]
-...
+# ...
 dependencies = [   # is setup.py this was called "install_requires"
   "required_dependency"
 ]
@@ -96,7 +96,7 @@ test = ["pytest"]
 Unless you're creating a universal Python2 / Python3 package, which in 2023 is unlikely, you need to specify minimum Python version:
 ```toml
 [project]
-...
+# ...
 requires-python = ">=3"
 ```
 
@@ -158,7 +158,7 @@ source = "https://github.com/ex/ample/"
 will ensure PyPI automatically rejects it:
 ```toml
 [project]
-...
+# ...
 classifiers = [
     "Private :: Do Not Upload",
 ]
