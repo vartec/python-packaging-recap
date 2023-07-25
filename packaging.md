@@ -90,7 +90,7 @@ Most likely you package has dependencies, you can also specify optional dependen
 [project]
 # ...
 dependencies = [   # is setup.py this was called "install_requires"
-  "required_dependency"
+  "required_dependency",
 ]
 
 [project.optional-dependencies]  # in setup.py this was called "extras_require"
@@ -201,18 +201,19 @@ or which keys in `setup.cfg` are setuptools specific, but there's [a helpful lis
 The migration from `setup.py` might be tedious, but not complicated, you just take all  parameters that are not setuptools 
 specific from `setup()` and convert them into fields of `[project]` section in `pyproject.toml`. 
 Some fields may require renaming:
-    - `install_requires` becomes `dependencies`
-    - `extras_require` become `optional-dependencies`
-    - `url` becomes `homepage` in `[project.urls]`;
-    - `author` & `author_email`, as well as `maintainer` & `maintainer_email` are rolled into `authors` and `maintainers` 
-       list, containing both name and email;
-    - `entry_points` become `[project.scripts]`
-    - `python_requires` becomes `requires-python`
+- `install_requires` becomes `dependencies`
+- `extras_require` become `optional-dependencies`
+- `url` becomes `homepage` in `[project.urls]`;
+- `author` & `author_email`, as well as `maintainer` & `maintainer_email` are rolled into `authors` and `maintainers` 
+    list, containing both name and email;
+- `entry_points` become `[project.scripts]`
+- `python_requires` becomes `requires-python`
+
 The `setup()` parameters that _are_ setuptools specific got into `[tool.setuptools]` section or its subsections.
 
 The above also applies to migrating from `setup.cfg`, where these keys are stored in `[metadata]` and `[option]` sections.
 
-Regarding `packages=find_packages...`, for [standard project layouts, flat-layout and src-layout](
+Regarding `packages=find_packages(...)`, for [standard project layouts, flat-layout and src-layout](
     https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/), 
 setuptools does a good job as auto-discovering, so in most cases it might be no longer necessary. 
 
