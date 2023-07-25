@@ -79,7 +79,7 @@ name = "myexamplepackage"  # the name of the package
 version = "1.2.3"  # a PEP-440 compliant version string
 ```
 
-Most likely you package has dependencies, you can also specify optional dependencies. 
+Most likely you package has dependencies, you can also specify optional dependencies (also known as _extras_). 
 
 ```toml
 [project]
@@ -100,7 +100,61 @@ Unless you're creating a universal Python2 / Python3 package, which in 2023 is u
 requires-python = ">=3"
 ```
 
-If a package is private and you want to prevent in being accidentally uploaded to PyPI, adding any classifier starting with `Private ::` 
+
+### Descriptive Fields 
+
+These fields are not required to _build_ the package, but are must have for any public package, and I'd still highly recommend them even 
+for internal, private packages.
+
+- `description` - a summary description of the package, preferably a single line;
+- `license` - can be either name of a license in [SPDX standard](https://spdx.org/licenses/) or a relative path to license file as `{file: <path_of_license_file>}`. 
+   Note that in `setup.(py|cfg)` these were two different fields, `license_file` and `license` respectively. 
+- `readme` - relative path to the README file.
+- `authors` & `maintainers` - lists of author and maintainers with at least a name and a email, eg. `{name = "Dev Eloper", email = "dev@example.com"}`.
+- `keywords` - array of string of keywords for search in indexes such as PyPI.
+- `project.urls` - a list of `key = URL`, there is no predefined list of keys you need to have, but a bare minimum would be a `homepage`,
+   which used to be a top level `url` field in `setup.(py|cfg)`. I'd strongly recommend also adding at least `source` and `documentation`.
+- `classifiers` - a list of strings classifying the project by it's maturity, environment, intended audience, supported OS, programming language, topic, etc.
+   PyPI maintains [a complete list of classifiers](https://pypi.org/classifiers/). 
+
+Example: 
+```toml
+[project]
+name = "foo"
+version = "0.9.8"
+description = "A Foo for a Bar and Baz"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+keywords = ["foo", "bar", "baz", "foo bar"]
+authors = [
+  {name = "Dev Eloper", email = "deve@example.com"},
+  {name = "Señor Dev", email = "sdev@example.com"},
+]
+maintainers = [
+  {name = "Mai Tainer", email = "mai@example.com"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+]
+dependencies = [
+  "Django ~= 4.2",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-cov[all]",
+]
+
+[project.urls]
+homepage = "https://foo.example.com"
+documentation = "https://example.readthedocs.org/"
+source = "https://github.com/ex/ample/"
+```
+
+**pro-tip**: If a package is private and you want to prevent in being accidentally uploaded to PyPI, adding any classifier starting with `Private ::` 
 will ensure PyPI automatically rejects it:
 ```toml
 [project]
@@ -110,10 +164,127 @@ classifiers = [
 ]
 ```
 
-### Descriptive Fields 
+### Single-Sourcing the Package Version
+It's a common practice to have package version stored in `package/version.py` or `package/__init__.py`, which would then be available as 
+`package.__version__` Python code. This creates a chicken-egg problem for the packaging tools, as you need to know the version of the package,
+_before_ the package available, thus before `package.__version__` could imported. Having the version in one single source of truth 
+is known as _single-sourcing the package version_(https://packaging.python.org/en/latest/guides/single-sourcing-package-version/).  
+In the legacy `setup.py` this required a gnarly workaround, and while there are many implementations, they all basically boil down
+to manually reading the specified file, than either using regex to extract the version, `exec`-ing the whole file, or outright
+having version stored in another plain-text file (which adds even more problems). None of these are great. 
 
+Since the release 61.0 of _setuptools_ same can be done significantly easier directly in `pyproject.toml`:
 
+```toml
+[project]
+name = "package"
+dynamic = ["version"]
 
+[tool.setuptools.dynamic]
+version = {attr = "package.__version__"}
+```
+
+Note, that the section `[tool.setuptools.dynamic]` is _setuptools_ specific, as such won't work with other build backends. 
+
+### Migrating `setup.py` and/or `setup.cfg` to `pyproject.toml`
+
+> **Warning**  
+> This is slightly controversial topic in Python community, and there are still devs to feel like `pyproject.toml`
+> has been forced upon them for no reason. I won't get into the details or take sides. What I am presenting 
+> in this document are the best practices as described in a PSF approved PEPs, and PyPA's best practices documentation. 
+ 
+As I've mentioned earlier, as of 2023, `pyproject.toml` can fully replace both `setup.py` and `setup.cfg`.
+Unfortunately legacy setuptools does not make a clear distinction between which `setup()` parameters in `setup.py`, 
+or which keys in `setup.cfg` are setuptools specific, but there's [a helpful list in setuptools documentation](
+    https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#setuptools-specific-configuration). 
+
+The migration from `setup.py` might be tedious, but not complicated, you just take all  parameters that are not setuptools 
+specific from `setup()` and convert them into fields of `[project]` section in `pyproject.toml`. 
+Some fields may require renaming:
+    - `install_requires` becomes `dependencies`
+    - `extras_require` become `optional-dependencies`
+    - `url` becomes `homepage` in `[project.urls]`;
+    - `author` & `author_email`, as well as `maintainer` & `maintainer_email` are rolled into `authors` and `maintainers` 
+       list, containing both name and email;
+    - `entry_points` become `[project.scripts]`
+    - `python_requires` becomes `requires-python`
+The `setup()` parameters that _are_ setuptools specific got into `[tool.setuptools]` section or its subsections.
+
+The above also applies to migrating from `setup.cfg`, where these keys are stored in `[metadata]` and `[option]` sections.
+
+Regarding `packages=find_packages...`, for [standard project layouts, flat-layout and src-layout](
+    https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/), 
+setuptools does a good job as auto-discovering, so in most cases it might be no longer necessary. 
+
+Abridged example, a legacy `setup.py`:
+
+```python
+from setuptools import setup
+
+setup(
+    name = 'foo',
+    version = '0.9.8',
+    description = 'A Foo for a Bar and Baz',
+    python_requires = '>=3.11'
+    author = 'Dev Eloper <deve@example.com>',
+    maintainer = 'Mai Tainer <mai@example.com>',
+    packages = find_packages(include=['foo', 'foo.*']), 
+    classifiers = [
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python",
+    ],
+    install_requires = [
+       'Django ~= 4.2',
+    ],
+    extras_require = {
+       'test': ['pytest', 'pytest-cov[all]'],
+    },
+    url = 'https://foo.example.com',
+    project_urls={
+        'documentation': 'https://example.readthedocs.org/',
+        'source': 'https://github.com/ex/ample/',
+    },
+)
+```
+
+Converted to `pyproject.toml` becomes:
+
+```toml
+[project]
+name = "foo"
+version = "0.9.8"
+description = "A Foo for a Bar and Baz"
+requires-python = ">=3.11"
+authors = [
+  {name = "Dev Eloper", email = "deve@example.com"},
+]
+maintainers = [
+  {name = "Mai Tainer", email = "mai@example.com"},
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+]
+dependencies = [
+  "Django ~= 4.2",
+]
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-cov[all]",
+]
+
+[project.urls]
+homepage = "https://foo.example.com"
+documentation = "https://example.readthedocs.org/"
+source = "https://github.com/ex/ample/"
+```
+
+But wait! — you say — there's a lot more stuff in my `setup.cfg`, can I migrate that too?
+
+Yes you can, for most of the tools `[<toolname>]` from `setup.cfg` becomes `tool.<toolname>`.  
+Note, that there are some tools that refuse to support `pyproject.toml`, thus you either 
+need [a workaround](https://github.com/csachs/pyproject-flake8) or switch to [different tools](https://black.readthedocs.io/). 
 
 ## Building Packages
 
