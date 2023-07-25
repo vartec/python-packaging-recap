@@ -67,6 +67,11 @@ You can tell Conda package apart from _sdist_ packages, as sdist is `{package}-{
 
 ### One `pyproject.toml` to Rule Them All
 
+> **Warning**  
+> This is slightly controversial topic in Python community, and there still are devs who feel like `pyproject.toml`
+> has been forced upon them for no reason. I won't get into the details or take sides. What I am presenting 
+> in this document are the best practices as described in PSF approved PEPs, and PyPA's packaging guidelines. 
+
 You can have whole specification of your package in just one file - `pyproject.toml`. It can, with some caveats, replace both `setup.py` and `setup.cfg`.
 Project specification goes into `[project]` section and `[project.*]` sub-sections. 
 
@@ -187,11 +192,6 @@ version = {attr = "package.__version__"}
 Note, that the section `[tool.setuptools.dynamic]` is _setuptools_ specific, as such won't work with other build backends. 
 
 ### Migrating `setup.py` and/or `setup.cfg` to `pyproject.toml`
-
-> **Warning**  
-> This is slightly controversial topic in Python community, and there still are devs who feel like `pyproject.toml`
-> has been forced upon them for no reason. I won't get into the details or take sides. What I am presenting 
-> in this document are the best practices as described in a PSF approved PEPs, and PyPA's packaging guidelines. 
  
 As I've mentioned earlier, as of 2023, `pyproject.toml` can fully replace both `setup.py` and `setup.cfg`.
 Unfortunately legacy setuptools does not make a clear distinction between which `setup()` parameters in `setup.py`, 
