@@ -11,7 +11,7 @@ and Python services deployment.
 
 The subjects I intent to cover:
 - various package types
-- alternative methods of specifying and building packages
+- dealing with package dependencies
 - various options for hosting private packages
 - building and deploying Python services 
 
@@ -37,11 +37,21 @@ Thus the answer to this question has never been more complex and contentious.
 
 [![XKCD: Python Environment](https://imgs.xkcd.com/comics/python_environment.png)](https://xkcd.com/1987/)
 
+Back in 2017 I wrote an extensive two part blog post on [Python packaging and releasing private code](
+    https://www.eventbrite.com/engineering/packaging-and-releasing-private-python-code-pt-1/). 
+A lot has improved since then, a lot of issues that I mentioned that would be solved in the near future
+have already been implemented, some of the issues become moot. So while it _was_ decent resource back then,
+it is obsolete now, and this document addresses that by being current, and attempting to be somewhat 
+future-proof by describing aspirational goals set by current PEP and PyPA standards, the way things
+_should_ be done, rather than then things often are done. That being said, even though these are 
+aspirational goals, all of this is already fully implemented and works as described. 
+
 ## Contents
 
-* [Part 1: Packaging](packaging.md) 
-<!-- * [Part 2: Specifying Dependencies](dependencies.md)
- * [Part 3: Hosting Packages (WIP)] -->
+### * [Part 1: Packaging](packaging.md) 
+### * Part 2: Specifying Dependencies _(coming soon)_
+### * Part 3: Hosting Packages _(coming soon)_
+
 
 --- 
 [![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa] This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
